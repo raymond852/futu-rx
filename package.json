@@ -1,7 +1,8 @@
 {
   "name": "futu-rx",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Futu Open API rxjs client",
+  "keywords":["futu", "富途", "futu open api"],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
