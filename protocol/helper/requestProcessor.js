@@ -4,7 +4,11 @@ const header = require("./header");
 const crypto = require('crypto');
 const Client = require('../../socket/client');
 
-function process(clientInstance, protoId, reqProto, respProto, jsonPayload, callerContext, aesKey) {
+function RequestProcessor(client) {
+  this.client = client
+}
+
+RequestProcessor.prototype.process = function (protoId, reqProto, respProto, jsonPayload, callerContext, aesKey) {
   var request = reqProto.create({
     c2s: jsonPayload
   });
@@ -35,7 +39,7 @@ function process(clientInstance, protoId, reqProto, respProto, jsonPayload, call
     }
   }
 
-  var packetReqId = clientInstance.nextRequestId();
+  var packetReqId = this.client.nextRequestId();
 
   headerBuffer = header.prepare(protoId, packetReqId, bodyBuffer);
 
@@ -63,7 +67,7 @@ function process(clientInstance, protoId, reqProto, respProto, jsonPayload, call
     return respProto.toObject(response);
   };
 
-  return clientInstance.sendRequestAndHandleResponse(
+  return this.client.sendRequestAndHandleResponse(
     packetReqId,
     header.getRequestId,
     request,
@@ -74,11 +78,9 @@ function process(clientInstance, protoId, reqProto, respProto, jsonPayload, call
       return ret;
     },
     resDeserializer,
-    clientInstance._packetTimeoutMs,
+    this.client._packetTimeoutMs,
     callerContext
   );
 }
 
-module.exports = {
-  process: process
-}
+module.exports = RequestProcessor

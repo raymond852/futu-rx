@@ -1,6 +1,5 @@
 const path = require("path");
 const protoLoader = require('./helper/protoLoader');
-const requestProcessor = require('./helper/requestProcessor');
 const nullcheck = require('../util/nullcheck');
 const tap = require('rxjs/operators').tap;
 const rxjs = require('rxjs');
@@ -26,9 +25,9 @@ module.exports = function () {
       userID: clientConfig.accountId,
     };
 
-    return requestProcessor
-      .process(self, protoId, Request, Response, c2sPayload, {
-        func: "trdGetAccList",
+    return self._requestProcessor
+      .process(protoId, Request, Response, c2sPayload, {
+        func: "Trd_GetAccList",
         args: args
       })
       .pipe(

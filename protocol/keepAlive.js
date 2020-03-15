@@ -1,6 +1,5 @@
 const path = require("path");
 const protoLoader = require('./helper/protoLoader');
-const requestProcessor = require('./helper/requestProcessor');
 const mergeMap = require("rxjs/operators").mergeMap;
 const filter = require('rxjs/operators').filter;
 const switchMap = require('rxjs/operators').switchMap;
@@ -30,9 +29,9 @@ module.exports = function () {
       var c2sPayload = {
         time: Math.floor(new Date().getTime() / 1000)
       }
-      return requestProcessor
-        .process(self, protoId, Request, Response, c2sPayload, {
-          func: "keepAlive",
+      return self._requestProcessor
+        .process(protoId, Request, Response, c2sPayload, {
+          func: "KeepAlive",
           args: args
         });
     }))

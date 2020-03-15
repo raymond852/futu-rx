@@ -43,5 +43,31 @@ module.exports = {
     SubType_KL_Qurater: 15, //季K
     SubType_KL_Year: 16, //年K
     SubType_KL_3Min: 17, //3分K
+  }),
+
+  QotKLFields: Object.freeze({
+    KLFields_High: 1, //最高价
+    KLFields_Open: 2, //开盘价
+    KLFields_Low: 4, //最低价
+    KLFields_Close: 8, //收盘价
+    KLFields_LastClose: 16, //昨收价
+    KLFields_Volume: 32, //成交量
+    KLFields_Turnover: 64, //成交额
+    KLFields_TurnoverRate: 128, //换手率
+    KLFields_PE: 256, //市盈率
+    KLFields_ChangeRate: 512, //涨跌幅
+  }),
+
+  QotSecurityType: Object.freeze({
+    SecurityType_Unknown: 0, //未知
+    SecurityType_Bond: 1, //债券
+    SecurityType_Bwrt: 2, //一揽子权证
+    SecurityType_Eqty: 3, //正股
+    SecurityType_Trust: 4, //信托,基金
+    SecurityType_Warrant: 5, //窝轮
+    SecurityType_Index: 6, //指数
+    SecurityType_Plate: 7, //板块
+    SecurityType_Drvt: 8, //期权
+    SecurityType_PlateSet: 9 //板块集
   })
 }

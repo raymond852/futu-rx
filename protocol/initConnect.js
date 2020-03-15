@@ -1,7 +1,7 @@
 const path = require("path");
 const uuid = require('../util/uuid');
 const protoLoader = require('./helper/protoLoader');
-const requestProcessor = require('./helper/requestProcessor');
+const header = require('./helper/header');
 const tap = require('rxjs/operators').tap;
 
 const protoPath = path.resolve(__dirname, "../pb/InitConnect.proto");
@@ -16,12 +16,21 @@ module.exports = function () {
     clientVer: 220,
     clientID: uuid.v4(),
     recvNotify: true,
-    packetEncAlgo: -1
+    packetEncAlgo: -1,
+    pushProtoFmt: 0
   };
 
-  return requestProcessor
-    .process(self, protoId, Request, Response, c2sPayload, {
-      func: "initConnect",
+  self
+    .dataRecv()
+    .subscribe(
+      (respBuf) => {
+        var h = header.parse(respBuf)
+      }
+    );
+
+  return self._requestProcessor
+    .process(protoId, Request, Response, c2sPayload, {
+      func: "InitConnect",
       args: args
     })
     .pipe(

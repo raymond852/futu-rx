@@ -1,6 +1,5 @@
 const path = require("path");
 const protoLoader = require('./helper/protoLoader');
-const requestProcessor = require('./helper/requestProcessor');
 const nullcheck = require('../util/nullcheck');
 const rxjs = require('rxjs');
 const defer = rxjs.defer;
@@ -39,9 +38,9 @@ module.exports = function (enumTrdEnv, enumTrdMarket) {
       }
     };
 
-    return requestProcessor
-      .process(self, protoId, Request, Response, c2sPayload, {
-        func: "trdGetFunds",
+    return self._requestProcessor
+      .process(protoId, Request, Response, c2sPayload, {
+        func: "Trd_GetFunds",
         args: args
       });
   });
