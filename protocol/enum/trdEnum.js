@@ -56,5 +56,14 @@ module.exports = {
     US: 2,
     CN_SH: 31,
     CN_SZ: 32
+  }),
+
+  TrdModifyOrderOp: Object.freeze({
+    Unknown: 0, //未知操作
+    Normal: 1, //修改订单的价格、数量等，即以前的改单
+    Cancel: 2, //撤单
+    Disable: 3, //失效
+    Enable: 4, //生效
+    Delete: 5 //删除
   })
 }

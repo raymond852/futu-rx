@@ -8,6 +8,7 @@ const throwError = rxjs.throwError;
 const protoPath = path.resolve(__dirname, "../pb/Trd_PlaceOrder.proto");
 const [Request, Response] = protoLoader.load(protoPath);
 
+// https://futunnopen.github.io/futu-api-doc/protocol/trade_protocol.html#trd-placeorder-proto-2202
 module.exports = function (enumTrdEnv, enumTrdMarket, enumTrdSide, enumTrdOrderType, secCode, qty, price) {
   const self = this;
   const args = Array.prototype.slice.call(arguments);
@@ -18,13 +19,18 @@ module.exports = function (enumTrdEnv, enumTrdMarket, enumTrdSide, enumTrdOrderT
       return throwError("please call client.trdGetAccList first");
     }
 
-    var account = self._protocolStateObj['accList'].filter((accInfo) => {
+    var accounts = self._protocolStateObj['accList'].filter((accInfo) => {
       return accInfo['trdMarketAuthList'] &&
         accInfo['trdMarketAuthList'].length > 0 &&
         accInfo['trdMarketAuthList'].indexOf(enumTrdMarket) >= 0 &&
         accInfo['trdEnv'] &&
         accInfo['trdEnv'] == enumTrdEnv;
     });
+
+
+    if (accounts.length == 0) {
+      throwError(`cannot find account matching enumTrdEnv=${enumTrdEnv} enumTrdMarket=${enumTrdMarket} accList=${self._protocolStateObj['accList']}`)
+    }
 
     var c2sPayload = {
       packetID: {
@@ -33,7 +39,7 @@ module.exports = function (enumTrdEnv, enumTrdMarket, enumTrdSide, enumTrdOrderT
       },
       header: {
         trdEnv: enumTrdEnv,
-        accID: account[0]['accID'],
+        accID: accounts[0]['accID'],
         trdMarket: enumTrdMarket
       },
       trdSide: enumTrdSide,

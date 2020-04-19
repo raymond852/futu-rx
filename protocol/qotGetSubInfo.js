@@ -5,10 +5,7 @@ const defer = rxjs.defer;
 const protoLoader = require('./helper/protoLoader');
 
 const protoPath = path.resolve(__dirname, "../pb/Qot_GetSubInfo.proto");
-const [
-  Request,
-  Response
-] = protoLoader.load(protoPath);
+const [Request, Response] = protoLoader.load(protoPath);
 
 // https://futunnopen.github.io/futu-api-doc/protocol/quote_protocol.html#qot-getsubinfo-proto-3003
 module.exports = function (isReqAllConn) {

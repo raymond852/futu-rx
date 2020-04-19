@@ -5,10 +5,7 @@ const defer = rxjs.defer;
 const protoLoader = require('./helper/protoLoader');
 
 const protoPath = path.resolve(__dirname, "../pb/Qot_RequestHistoryKL.proto");
-const [
-  Request,
-  Response
-] = protoLoader.load(protoPath);
+const [Request, Response] = protoLoader.load(protoPath);
 
 module.exports = function (security, enumQotRehabType, enumQotKLType, beginTime, endTime, flagEnumKLFields, nextReqKey, maxAckKLNum) {
   const self = this;

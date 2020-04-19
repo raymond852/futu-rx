@@ -7,6 +7,7 @@ const tap = require('rxjs/operators').tap;
 const protoPath = path.resolve(__dirname, "../pb/InitConnect.proto");
 const [Request, Response] = protoLoader.load(protoPath);
 
+// https://futunnopen.github.io/futu-api-doc/protocol/base_define.html#initconnect-proto-1001
 module.exports = function () {
   const protoId = "1001";
   const self = this;

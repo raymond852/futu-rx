@@ -8,6 +8,7 @@ const throwError = rxjs.throwError;
 const protoPath = path.resolve(__dirname, "../pb/Trd_UnlockTrade.proto");
 const [Request, Response] = protoLoader.load(protoPath);
 
+// https://futunnopen.github.io/futu-api-doc/protocol/trade_protocol.html#trd-unlocktrade-proto-2005
 module.exports = function (unlock) {
   const self = this;
   const args = Array.prototype.slice.call(arguments);

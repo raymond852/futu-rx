@@ -7,11 +7,9 @@ const rxjs = require('rxjs');
 const interval = rxjs.interval;
 
 const protoPath = path.resolve(__dirname, "../pb/KeepAlive.proto");
-const [
-  Request,
-  Response
-] = protoLoader.load(protoPath);
+const [Request, Response] = protoLoader.load(protoPath);
 
+// https://futunnopen.github.io/futu-api-doc/protocol/base_define.html#keepalive-proto-1004
 module.exports = function () {
   const self = this;
   const args = Array.prototype.slice.call(arguments);

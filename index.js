@@ -34,10 +34,13 @@ Futu.prototype.qotRequestHistoryKLQuota = require('./protocol/qotRequestHistoryK
 Futu.prototype.qotRegQotPush = require('./protocol/qotRegQotPush');
 Futu.prototype.qotGetSubInfo = require('./protocol/qotGetSubInfo');
 Futu.prototype.trdGetAccList = require('./protocol/trdGetAccList');
+Futu.prototype.trdSubAccPush = require('./protocol/trdSubAccPush');
 Futu.prototype.trdGetFunds = require('./protocol/trdGetFunds');
 Futu.prototype.trdGetHistoryOrderList = require('./protocol/trdGetHistoryOrderList');
-Futu.prototype.trdUnlockTrade = require('./protocol/trdUnlockTrade');
+Futu.prototype.trdGetPositionList = require('./protocol/trdGetPositionList')
+Futu.prototype.trdModifyOrder = require('./protocol/trdModifyOrder');
 Futu.prototype.trdPlaceOrder = require('./protocol/trdPlaceOrder');
+Futu.prototype.trdUnlockTrade = require('./protocol/trdUnlockTrade');
 
 Futu.Enum = {
   ...require('./protocol/enum/qotEnum'),

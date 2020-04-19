@@ -5,10 +5,7 @@ const defer = rxjs.defer;
 const protoLoader = require('./helper/protoLoader');
 
 const protoPath = path.resolve(__dirname, "../pb/Qot_RegQotPush.proto");
-const [
-  Request,
-  Response
-] = protoLoader.load(protoPath);
+const [Request, Response] = protoLoader.load(protoPath);
 
 // https://futunnopen.github.io/futu-api-doc/protocol/quote_protocol.html#qot-regqotpush-proto-3002
 module.exports = function (securityList, enumQotSubTypeList, enumQotRehabTypeList, isRegOrUnReg, isFirstPush) {
