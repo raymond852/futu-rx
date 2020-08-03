@@ -50,7 +50,7 @@ npm install futu-rx --save
 
 ## Usage 
 ```javascript
-const Futu = require('../index');
+const Futu = require('futu-rx');
 const toArray = require('rxjs/operators').toArray;
 const concatAll = require('rxjs/operators').concatAll;
 const rxjs = require('rxjs');
