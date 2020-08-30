@@ -1,5 +1,7 @@
-﻿syntax = "proto2";
+syntax = "proto2";
 package Qot_Common;
+option java_package = "com.futu.openapi.pb";
+option go_package = "github.com/futuopen/ftapi4go/pb/qotcommon";
 
 import "Common.proto";
 
@@ -7,7 +9,7 @@ enum QotMarket
 {
     QotMarket_Unknown = 0; //未知市场
     QotMarket_HK_Security = 1; //港股
-    QotMarket_HK_Future = 2; //港期货(目前是恒指的当月、下月期货行情)
+    QotMarket_HK_Future = 2; //港期货(已废弃，使用QotMarket_HK_Security即可)
     QotMarket_US_Security = 11; //美股
     QotMarket_CNSH_Security = 21; //沪股
     QotMarket_CNSZ_Security = 22; //深股
@@ -20,11 +22,12 @@ enum SecurityType
     SecurityType_Bwrt = 2; //一揽子权证
     SecurityType_Eqty = 3; //正股
     SecurityType_Trust = 4; //信托,基金
-    SecurityType_Warrant = 5; //涡轮
+    SecurityType_Warrant = 5; //窝轮
     SecurityType_Index = 6; //指数
     SecurityType_Plate = 7; //板块
     SecurityType_Drvt = 8; //期权
     SecurityType_PlateSet = 9; //板块集
+	SecurityType_Future = 10; //期货
 }
 
 enum PlateSetType
@@ -43,6 +46,7 @@ enum WarrantType
 	WarrantType_Sell = 2; //认沽
 	WarrantType_Bull = 3; //牛
 	WarrantType_Bear = 4; //熊
+	WarrantType_InLine = 5; //界内证
 };
 
 enum OptionType
@@ -51,6 +55,21 @@ enum OptionType
 	OptionType_Call = 1; //涨
 	OptionType_Put = 2; //跌
 };
+
+enum IndexOptionType
+{
+	IndexOptionType_Unknown = 0; //未知
+	IndexOptionType_Normal = 1; //正常普通的指数期权
+	IndexOptionType_Small = 2; //小型指数期权
+}
+
+enum OptionAreaType
+{
+	OptionAreaType_Unknown = 0; //未知
+	OptionAreaType_American = 1; //美式
+	OptionAreaType_European = 2; //欧式
+	OptionAreaType_Bermuda = 3; //百慕大
+}
 
 enum QotMarketState
 {
@@ -67,14 +86,33 @@ enum QotMarketState
 	QotMarketState_AfterHoursEnd = 11; // 盘后结束 
 	QotMarketState_NightOpen = 13; // 夜市开盘 
 	QotMarketState_NightEnd = 14; // 夜市收盘 
-	QotMarketState_FutureDayOpen = 15; // 期指日市开盘 
-	QotMarketState_FutureDayBreak = 16; // 期指日市休市 
-	QotMarketState_FutureDayClose = 17; // 期指日市收盘 
-	QotMarketState_FutureDayWaitForOpen = 18; // 期指日市等待开盘 
-	QotMarketState_HkCas = 19; // 盘后竞价,港股市场增加CAS机制对应的市场状态
+	QotMarketState_FutureDayOpen = 15; // 期货日市开盘 
+	QotMarketState_FutureDayBreak = 16; // 期货日市休市 
+	QotMarketState_FutureDayClose = 17; // 期货日市收盘 
+	QotMarketState_FutureDayWaitForOpen = 18; // 期货日市等待开盘 
+	QotMarketState_HkCas = 19; // 盘后竞价,港股市场增加CAS机制对应的市场状态	
+	QotMarketState_FutureNightWait = 20; // 夜市等待开盘
+	QotMarketState_FutureAfternoon = 21; // 期货下午开盘
+	//美国期货新增加状态
+	QotMarketState_FutureSwitchDate = 22; // 期货切交易日
+	QotMarketState_FutureOpen = 23; // 期货开盘
+	QotMarketState_FutureBreak = 24; // 期货中盘休息
+	QotMarketState_FutureBreakOver = 25; // 期货休息后开盘
+	QotMarketState_FutureClose = 26; // 期货收盘
 }
 
-//交易时间类型
+//交易日查询市场
+enum TradeDateMarket
+{
+	TradeDateMarket_Unknown = 0; //未知
+	TradeDateMarket_HK = 1; //港股市场
+	TradeDateMarket_US = 2; //美股市场
+	TradeDateMarket_CN = 3; //A股市场
+	TradeDateMarket_NT = 4; //深（沪）股通
+	TradeDateMarket_ST = 5; //港股通（深、沪）
+}
+
+//交易日类型
 enum TradeDateType
 {
 	TradeDateType_Whole = 0; //全天交易
@@ -90,7 +128,6 @@ enum RehabType
 }
 
  //枚举值兼容旧协议定义
- //新类型季K,年K,3分K暂时没有支持历史K线
 enum KLType
 {
 	KLType_Unknown = 0; //未知
@@ -180,13 +217,14 @@ enum TickerType
 	TickerType_T = 21; //T类交易(盘前和盘后交易)
 	TickerType_ExtendedTradingHours = 22; //延长交易时段
 	TickerType_Contingent = 23; //合单交易
-	TickerType_AveragePrice = 24; //平均价成交
+	TickerType_AvgPrice = 24; //平均价成交
 	TickerType_OTCSold = 25; //场外售出
 	TickerType_OddLotCrossMarket = 26; //碎股跨市场交易
 	TickerType_DerivativelyPriced = 27; //衍生工具定价
 	TickerType_ReOpeningPriced = 28; //再开盘定价
 	TickerType_ClosingPriced = 29; //收盘定价
 	TickerType_ComprehensiveDelayPrice = 30; //综合延迟价格
+	TickerType_Overseas = 31; //交易的一方不是香港交易所的成员，属于场外交易
 }
 
 enum DarkStatus
@@ -194,6 +232,32 @@ enum DarkStatus
 	DarkStatus_None = 0; //无暗盘交易
 	DarkStatus_Trading = 1; //暗盘交易中
 	DarkStatus_End = 2; //暗盘交易结束
+}
+
+enum SecurityStatus
+{
+	SecurityStatus_Unknown = 0; //未知
+	SecurityStatus_Normal = 1; //正常状态
+	SecurityStatus_Listing = 2; //待上市
+	SecurityStatus_Purchasing = 3; //申购中
+	SecurityStatus_Subscribing = 4; //认购中
+	SecurityStatus_BeforeDrakTradeOpening = 5; //暗盘开盘前
+	SecurityStatus_DrakTrading = 6; //暗盘交易中
+	SecurityStatus_DrakTradeEnd = 7; //暗盘已收盘
+	SecurityStatus_ToBeOpen = 8; //待开盘
+	SecurityStatus_Suspended = 9; //停牌
+	SecurityStatus_Called = 10; //已收回
+	SecurityStatus_ExpiredLastTradingDate = 11; //已过最后交易日
+	SecurityStatus_Expired = 12; //已过期
+	SecurityStatus_Delisted = 13; //已退市
+	SecurityStatus_ChangeToTemporaryCode = 14; //公司行动中，交易关闭，转至临时代码交易
+	SecurityStatus_TemporaryCodeTradeEnd = 15; //临时买卖结束，交易关闭
+	SecurityStatus_ChangedPlateTradeEnd = 16; //已转板，旧代码交易关闭
+	SecurityStatus_ChangedCodeTradeEnd = 17; //已换代码，旧代码交易关闭
+	SecurityStatus_RecoverableCircuitBreaker = 18; //可恢复性熔断
+	SecurityStatus_UnRecoverableCircuitBreaker = 19; //不可恢复性熔断
+	SecurityStatus_AfterCombination = 20; //盘后撮合
+	SecurityStatus_AfterTransation = 21; //盘后交易
 }
 
 enum HolderCategory
@@ -213,7 +277,7 @@ enum PushDataType
 	PushDataType_Cache = 3; //非实时非连接断开补充数据
 }
 
-//涡轮排序
+//窝轮排序
 enum SortField
 {
 	SortField_Unknow = 0;
@@ -228,6 +292,9 @@ enum SortField
     SortField_AskVol = 9; //卖量
     SortField_Volume = 10; //成交量
     SortField_Turnover = 11; //成交额
+	SortField_Amplitude = 30; //振幅%
+
+	//以下排序字段只支持用于Qot_GetWarrant协议
 	SortField_Score = 12; //综合评分
     SortField_Premium = 13; //溢价%
 	SortField_EffectiveLeverage = 14; //有效杠杆
@@ -246,14 +313,33 @@ enum SortField
     SortField_Change = 27; //换股比率
     SortField_StreetRate = 28; //街货比%
 	SortField_StreetVol = 29; //街货量
-    SortField_Amplitude = 30; //振幅%
-	SortField_WarrantName = 31; // 名称
+	SortField_WarrantName = 31; // 窝轮名称
     SortField_Issuer = 32; //发行人
 	SortField_LotSize = 33; // 每手
     SortField_IssueSize = 34; //发行量
+	SortField_UpperStrikePrice = 45; //上限价，仅用于界内证
+	SortField_LowerStrikePrice = 46; //下限价，仅用于界内证
+	SortField_InLinePriceStatus = 47; //界内界外，仅用于界内证
+
+	//以下排序字段只支持用于Qot_GetPlateSecurity协议，并仅支持美股
+	SortField_PreCurPrice = 35; //盘前最新价
+	SortField_AfterCurPrice = 36; //盘后最新价
+	SortField_PrePriceChangeVal = 37; //盘前涨跌额
+	SortField_AfterPriceChangeVal = 38; //盘后涨跌额
+    SortField_PreChangeRate = 39; //盘前涨跌幅%
+	SortField_AfterChangeRate = 40; //盘后涨跌幅%
+	SortField_PreAmplitude = 41; //盘前振幅%
+	SortField_AfterAmplitude = 42; //盘后振幅%
+	SortField_PreTurnover = 43; //盘前成交额
+	SortField_AfterTurnover = 44; //盘后成交额
+
+	//以下排序字段只支持用于Qot_GetPlateSecurity协议，并仅支持期货
+	SortField_LastSettlePrice = 48; //昨结
+	SortField_Position = 49; //持仓量
+	SortField_PositionChange = 50; //日增仓
 }
 
-//涡轮发行人
+//窝轮发行人
 enum Issuer
 {
 	Issuer_Unknow = 0; //未知
@@ -279,9 +365,10 @@ enum Issuer
     Issuer_HT = 20; //海通
     Issuer_VT = 21; //瑞通
     Issuer_KC = 22; //比联
+	Issuer_MS = 23; //摩利
 }
 
-//涡轮上市日
+//窝轮上市日
 enum IpoPeriod
 {
 	IpoPeriod_Unknow = 0; //未知
@@ -292,15 +379,15 @@ enum IpoPeriod
     IpoPeriod_Lastmonth = 5; //过去一月上市
 }
 
-//涡轮价外/内
+//窝轮价外/内,界内证表示界内界外
 enum PriceType
 {
 	PriceType_Unknow = 0;
-	PriceType_Outside = 1; //价外
-	PriceType_WithIn = 2; //价内
+	PriceType_Outside = 1; //价外，界内证表示界外
+	PriceType_WithIn = 2; //价内，界内证表示界内
 }
 
-//涡轮状态
+//窝轮状态
 enum WarrantStatus
 {
     WarrantStatus_Unknow = 0; //未知
@@ -323,6 +410,57 @@ enum CompanyAct
 	CompanyAct_SPDividend = 128; //特别股息	
 }
 
+//行情权限
+enum QotRight
+{
+	QotRight_Unknow = 0; //未知
+	QotRight_Bmp = 1; //Bmp，无法订阅
+	QotRight_Level1 = 2; //Level1
+	QotRight_Level2 = 3; //Level2
+	QotRight_SF = 4; //SF高级行情
+	QotRight_No = 5; //无权限
+}
+
+// 提醒类型
+enum PriceReminderType
+{
+	PriceReminderType_Unknown = 0; // 未知
+    PriceReminderType_PriceUp = 1; // 价格涨到
+	PriceReminderType_PriceDown = 2; // 价格跌到
+	PriceReminderType_ChangeRateUp = 3; // 日涨幅超，该字段为百分比字段，设置时填20表示20%
+	PriceReminderType_ChangeRateDown = 4; // 日跌幅超，该字段为百分比字段，设置时填20表示20%
+	PriceReminderType_5MinChangeRateUp = 5; // 5分钟涨幅超，该字段为百分比字段，设置时填20表示20%
+	PriceReminderType_5MinChangeRateDown = 6; // 5分钟跌幅超，该字段为百分比字段，设置时填20表示20%
+	PriceReminderType_VolumeUp = 7; // 成交量超过
+	PriceReminderType_TurnoverUp = 8; // 成交额超过
+	PriceReminderType_TurnoverRateUp = 9; // 换手率超过，该字段为百分比字段，设置时填20表示20%
+	PriceReminderType_BidPriceUp = 10; // 买一价高于
+	PriceReminderType_AskPriceDown = 11; // 卖一价低于
+	PriceReminderType_BidVolUp = 12; // 买一量高于	
+	PriceReminderType_AskVolUp = 13; // 卖一量高于
+}
+
+// 提醒频率
+enum PriceReminderFreq
+{
+	PriceReminderFreq_Unknown = 0; // 未知
+    PriceReminderFreq_Always = 1; // 持续提醒
+    PriceReminderFreq_OnceADay = 2; // 每日一次
+    PriceReminderFreq_OnlyOnce = 3; // 仅提醒一次
+}
+
+// 资产类别
+enum AssetClass
+{
+	AssetClass_Unknow = 0; //未知
+	AssetClass_Stock = 1; //股票
+	AssetClass_Bond = 2; //债券
+	AssetClass_Commodity = 3; //商品
+	AssetClass_CurrencyMarket = 4; //货币市场
+	AssetClass_Future = 5; //期货
+	AssetClass_Swap = 6; //掉期
+}
+
  //两个字段确定一支股票
 message Security
 {
@@ -341,24 +479,62 @@ message KLine
 	optional double lastClosePrice = 7; //昨收价
 	optional int64 volume = 8; //成交量
 	optional double turnover = 9; //成交额
-	optional double turnoverRate = 10; //换手率
+	optional double turnoverRate = 10; //换手率（该字段为百分比字段，展示为小数表示）
 	optional double pe = 11; //市盈率
-	optional double changeRate = 12; //涨跌幅
+	optional double changeRate = 12; //涨跌幅（该字段为百分比字段，默认不展示%，如20实际对应20%）
 	optional double timestamp = 13; //时间戳
 }
 
 message OptionBasicQotExData
 {
 	required double strikePrice = 1; //行权价
-	required int32 contractSize = 2; //每份合约数
+	required int32 contractSize = 2; //每份合约数(整型数据)
+	optional double contractSizeFloat = 17; //每份合约数（浮点型数据）
 	required int32 openInterest = 3; //未平仓合约数
-	required double impliedVolatility = 4; //隐含波动率
-	required double premium = 5; //溢价
+	required double impliedVolatility = 4; //隐含波动率（该字段为百分比字段，默认不展示%，如20实际对应20%）
+	required double premium = 5; //溢价（该字段为百分比字段，默认不展示%，如20实际对应20%）
 	required double delta = 6; //希腊值 Delta
     required double gamma = 7; //希腊值 Gamma
 	required double vega = 8; //希腊值 Vega
     required double theta = 9; //希腊值 Theta
     required double rho = 10; //希腊值 Rho
+
+	//以下字段仅支持港股期权
+	optional int32 netOpenInterest = 11; //净未平仓合约数
+	optional int32 expiryDateDistance = 12; //距离到期日天数
+	optional double contractNominalValue = 13; //合约名义金额
+	optional double ownerLotMultiplier = 14; //相等正股手数，指数期权无该字段
+	optional int32 optionAreaType = 15; //OptionAreaType, 期权地区类型
+	optional double contractMultiplier = 16; //合约乘数，指数期权特有字段
+}
+
+//美股支持盘前盘后数据
+//科创板仅支持盘后数据：成交量，成交额
+message PreAfterMarketData
+{
+	optional double price = 1;  // 盘前或盘后 - 价格
+    optional double highPrice = 2;  // 盘前或盘后 - 最高价
+    optional double lowPrice = 3;  // 盘前或盘后 - 最低价
+    optional int64 volume = 4;  // 盘前或盘后 - 成交量
+    optional double turnover = 5;  // 盘前或盘后 - 成交额
+    optional double changeVal = 6;  // 盘前或盘后 - 涨跌额
+    optional double changeRate = 7;  // 盘前或盘后 - 涨跌幅（该字段为百分比字段，默认不展示%，如20实际对应20%）
+    optional double amplitude = 8;  // 盘前或盘后 - 振幅（该字段为百分比字段，默认不展示%，如20实际对应20%）
+}
+
+message FutureBasicQotExData
+{
+	required double lastSettlePrice = 1; //昨结
+	required int32 position = 2; //持仓量
+	required int32 positionChange = 3; //日增仓
+	optional int32 expiryDateDistance = 4; //距离到期日天数
+}
+
+message WarrantBasicQotExData
+{
+    optional double delta = 1; //对冲值,仅认购认沽支持该字段
+    optional double impliedVolatility = 2; //引申波幅,仅认购认沽支持该字段
+    required double premium = 3; //溢价（该字段为百分比字段，默认不展示%，如20实际对应20%）
 }
 
 message BasicQot
@@ -367,7 +543,7 @@ message BasicQot
 	required bool isSuspended = 2; //是否停牌
 	required string listTime = 3; //上市日期字符串
 	required double priceSpread = 4; //价差
-	required string updateTime = 5; //更新时间字符串
+	required string updateTime = 5; //最新价的更新时间字符串，对其他字段不适用
 	required double highPrice = 6; //最高价
 	required double openPrice = 7; //开盘价
 	required double lowPrice = 8; //最低价
@@ -375,13 +551,17 @@ message BasicQot
 	required double lastClosePrice = 10; //昨收价
 	required int64 volume = 11; //成交量
 	required double turnover = 12; //成交额
-	required double turnoverRate = 13; //换手率
-	required double amplitude = 14; //振幅
-	optional int32 darkStatus = 15; //DarkStatus, 暗盘交易状态
-	optional double listTimestamp = 17; //上市日期时间戳
-	optional double updateTimestamp = 18; //更新时间戳
-
+	required double turnoverRate = 13; //换手率（该字段为百分比字段，默认不展示%，如20实际对应20%）
+	required double amplitude = 14; //振幅（该字段为百分比字段，默认不展示%，如20实际对应20%）
+	optional int32 darkStatus = 15; //DarkStatus, 暗盘交易状态	
 	optional OptionBasicQotExData optionExData = 16; //期权特有字段
+	optional double listTimestamp = 17; //上市日期时间戳
+	optional double updateTimestamp = 18; //最新价的更新时间戳，对其他字段不适用
+	optional PreAfterMarketData preMarket = 19; //盘前数据
+	optional PreAfterMarketData afterMarket = 20; //盘后数据
+	optional int32 secStatus = 21; //SecurityStatus, 股票状态
+	optional FutureBasicQotExData futureExData = 22; //期货特有字段
+	optional WarrantBasicQotExData warrantExData = 23; //窝轮特有字段
 }
 
 message TimeShare
@@ -401,7 +581,7 @@ message SecurityStaticBasic
 {
 	required Qot_Common.Security security = 1; //股票
 	required int64 id = 2; //股票ID
-	required int32 lotSize = 3; //每手数量,期权类型表示一份合约的股数
+	required int32 lotSize = 3; //每手数量,期权以及期货类型表示合约乘数
 	required int32 secType = 4; //Qot_Common.SecurityType,股票类型
 	required string name = 5; //股票名字
 	required string listTime = 6; //上市时间字符串
@@ -411,7 +591,7 @@ message SecurityStaticBasic
 
 message WarrantStaticExData
 {
-	required int32 type = 1; //Qot_Common.WarrantType,涡轮类型
+	required int32 type = 1; //Qot_Common.WarrantType,窝轮类型
 	required Qot_Common.Security owner = 2; //所属正股
 }
 
@@ -424,6 +604,14 @@ message OptionStaticExData
 	required bool suspend = 5; //是否停牌
 	required string market = 6; //发行市场名字
 	optional double strikeTimestamp = 7; //行权日时间戳
+	optional int32 indexOptionType = 8; //Qot_Common.IndexOptionType, 指数期权的类型，仅在指数期权有效
+}
+
+message FutureStaticExData
+{
+	required string lastTradeTime = 1; //最后交易日，只有非主连期货合约才有该字段
+	optional double lastTradeTimestamp = 2; //最后交易日时间戳，只有非主连期货合约才有该字段
+	required bool isMainContract = 3; //是否主连合约
 }
 
 message SecurityStaticInfo
@@ -431,6 +619,7 @@ message SecurityStaticInfo
 	required SecurityStaticBasic basic = 1; //基本股票静态信息
 	optional WarrantStaticExData warrantExData = 2; //窝轮额外股票静态信息
 	optional OptionStaticExData optionExData = 3; //期权额外股票静态信息
+	optional FutureStaticExData futureExData = 4; //期货额外股票静态信息
 }
 
 message Broker
@@ -438,6 +627,10 @@ message Broker
 	required int64 id = 1; //经纪ID
 	required string name = 2; //经纪名称
 	required int32 pos = 3; //经纪档位
+
+	//以下为SF行情特有字段
+	optional int64 orderID = 4; //交易所订单ID，与交易接口返回的订单ID并不一样
+	optional int64 volume = 5; //订单股数
 }
 
 message Ticker
@@ -455,11 +648,18 @@ message Ticker
 	optional double timestamp = 11; //时间戳
 }
 
+message OrderBookDetail
+{
+	required int64 orderID = 1; //交易所订单ID，与交易接口返回的订单ID并不一样
+	required int64 volume = 2; //订单股数
+}
+
 message OrderBook
 {
 	required double price = 1; //委托价格
 	required int64 volume = 2; //委托数量
 	required int32 orederCount = 3; //委托订单个数
+	repeated OrderBookDetail detailList = 4; //订单信息，SF行情特有
 }
 
 message OrderDetail
@@ -473,9 +673,9 @@ message ShareHoldingChange
 {
     required string holderName = 1; //持有者名称（机构名称 或 基金名称 或 高管姓名）
     required double holdingQty = 2; //当前持股数量
-    required double holdingRatio = 3; //当前持股百分比
+    required double holdingRatio = 3; //当前持股百分比（该字段为百分比字段，默认不展示%，如20实际对应20%）
     required double changeQty = 4; //较上一次变动数量
-	required double changeRatio = 5; //较上一次变动百分比（是相对于自身的比例，而不是总的。如总股本1万股，持有100股，持股百分比是1%，卖掉50股，变动比例是50%，而不是0.5%）
+	required double changeRatio = 5; //较上一次变动百分比（该字段为百分比字段，默认不展示%，如20实际对应20%。是相对于自身的比例，而不是总的。如总股本1万股，持有100股，持股百分比是1%，卖掉50股，变动比例是50%，而不是0.5%）
     required string time = 6; //发布时间(YYYY-MM-DD HH:MM:SS字符串)
 	optional double timestamp = 7; //时间戳
 }
@@ -508,21 +708,21 @@ message Rehab
 	required double fwdFactorB = 4; //前复权因子B
 	required double bwdFactorA = 5; //后复权因子A
 	required double bwdFactorB = 6; //后复权因子B
-	optional int32 splitBase = 7; //拆股(eg.1拆5，Base为1，Ert为5)
+	optional int32 splitBase = 7; //拆股(例如，1拆5，Base为1，Ert为5)
 	optional int32 splitErt = 8;	
-	optional int32 joinBase = 9; //合股(eg.50合1，Base为50，Ert为1)
+	optional int32 joinBase = 9; //合股(例如，50合1，Base为50，Ert为1)
 	optional int32 joinErt = 10;	
-	optional int32 bonusBase = 11; //送股(eg.10送3, Base为10,Ert为3)
+	optional int32 bonusBase = 11; //送股(例如，10送3, Base为10,Ert为3)
 	optional int32 bonusErt = 12;	
-	optional int32 transferBase = 13; //转赠股(eg.10转3, Base为10,Ert为3)
+	optional int32 transferBase = 13; //转赠股(例如，10转3, Base为10,Ert为3)
 	optional int32 transferErt = 14;	
-	optional int32 allotBase = 15; //配股(eg.10送2, 配股价为6.3元, Base为10, Ert为2, Price为6.3)
+	optional int32 allotBase = 15; //配股(例如，10送2, 配股价为6.3元, Base为10, Ert为2, Price为6.3)
 	optional int32 allotErt = 16;	
 	optional double allotPrice = 17;	
-	optional int32 addBase = 18; //增发股(eg.10送2, 增发股价为6.3元, Base为10, Ert为2, Price为6.3)
+	optional int32 addBase = 18; //增发股(例如，10送2, 增发股价为6.3元, Base为10, Ert为2, Price为6.3)
 	optional int32 addErt = 19;	
 	optional double addPrice = 20;	
-	optional double dividend = 21; //现金分红(eg.每10股派现0.5元,则该字段值为0.05)
-	optional double spDividend = 22; //特别股息(eg.每10股派特别股息0.5元,则该字段值为0.05)
+	optional double dividend = 21; //现金分红(例如，每10股派现0.5元,则该字段值为0.05)
+	optional double spDividend = 22; //特别股息(例如，每10股派特别股息0.5元,则该字段值为0.05)
 	optional double timestamp = 23; //时间戳
 }

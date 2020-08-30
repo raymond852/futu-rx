@@ -1,12 +1,14 @@
 syntax = "proto2";
 package Trd_GetAccList;
+option java_package = "com.futu.openapi.pb";
+option go_package = "github.com/futuopen/ftapi4go/pb/trdgetacclist";
 
 import "Common.proto";
 import "Trd_Common.proto";
 
 message C2S
 {
-	required uint64 userID = 1; //需要跟FutuOpenD登陆的牛牛用户ID一致，否则会返回失败
+	required uint64 userID = 1; //历史原因，目前已废弃，填0即可
 }
 
 message S2C
